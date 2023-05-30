@@ -28,27 +28,51 @@ parser.add_argument(
 )
 
 
-def split_pdf(path):
+def write_single_page(page, pdf, path, output_folder):
+    pdf_writer = PdfWriter()
+    pdf_writer.add_page(pdf.pages[page])
+
+    output_path = output_folder / f"{path.name.replace('.pdf', '')}_page_{page+1}.pdf"
+
+    write_pdf(output_path, pdf_writer)
+
+
+def write_pdf(path, writer):
+    with open(path, "wb") as out:
+        writer.write(out)
+
+    print("Created: {}".format(path.name))
+
+
+def write_split_pages(page_index, pdf, path, output_folder):
+    pdf_writer = PdfWriter()
+    page = pdf.pages[page_index]
+    page.mediabox.upper_right = (
+        page.mediabox.right / 2,
+        page.mediabox.top,
+    )
+    pdf_writer.add_page(page)
+    output_path = output_folder / f"{path.name.replace('.pdf', '')}_page_{page_index+1}.pdf"
+
+    write_pdf(output_path, pdf_writer)
+
+
+def split_pdf(path, split_pages):
     pdf = PdfReader(path)
     output_folder = path.parent.absolute() / "single_page_export"
     output_folder.mkdir(exist_ok=True)
     for page in range(len(pdf.pages)):
-        pdf_writer = PdfWriter()
-        pdf_writer.add_page(pdf.pages[page])
-
-        output_path = output_folder / f"{path.name}_page_{page+1}.pdf"
-
-        with open(output_path, "wb") as out:
-            pdf_writer.write(out)
-
-        print("Created: {}".format(output_path.name))
+        if split_pages:
+            write_split_pages(page, pdf, path, output_folder)
+        else:
+            write_single_page(page, pdf, path, output_folder)
 
 
 def main():
     args = parser.parse_args()
     files = args.paths
     for one_file in files:
-        split_pdf(one_file)
+        split_pdf(one_file, True)
 
 
 if __name__ == "__main__":
