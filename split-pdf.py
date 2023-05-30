@@ -1,5 +1,5 @@
 import os
-from PyPDF import PdfReader, PdfWriter
+from pypdf import PdfReader, PdfWriter
 import argparse
 from pathlib import Path
 
@@ -40,7 +40,7 @@ def split_pdf(path):
         with open(output_path, 'wb') as out:
             pdf_writer.write(out)
 
-        print('Created: {}'.format(output_path.name))
+        print(f'Created: {output_path.name}')
 
 def main():
     args = parser.parse_args()
