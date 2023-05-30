@@ -14,8 +14,8 @@ def is_valid_pdf(filepath):
 parser = argparse.ArgumentParser(
     prog="PDFSplitter",
     usage="%(prog)s pdfToSplit",
-    description="Pass one or plus pdf and spit an export of single pages",
-    epilog="nique le capitalisme et évidemment.",
+    description="Pass one or more pdfs and spit and export single pages",
+    epilog="et nique le capitalisme bien évidemment.",
 )
 
 parser.add_argument(
