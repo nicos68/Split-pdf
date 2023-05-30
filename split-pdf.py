@@ -1,4 +1,3 @@
-import os
 from pypdf import PdfReader, PdfWriter
 import argparse
 from pathlib import Path
