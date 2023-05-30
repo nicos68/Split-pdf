@@ -47,12 +47,26 @@ def write_pdf(path, writer):
 def write_split_pages(page_index, pdf, path, output_folder):
     pdf_writer = PdfWriter()
     page = pdf.pages[page_index]
-    page.mediabox.upper_right = (
-        page.mediabox.right / 2,
-        page.mediabox.top,
+    output_page = pdf_writer.add_blank_page(page.mediabox.width, page.mediabox.height)
+    output_page.merge_page(page)
+    dimensions = (page.mediabox.right / 2, page.mediabox.top)
+    output_page.mediabox.upper_right = dimensions
+    output_page_index = page_index * 2 + 1
+    output_path = (
+        output_folder / f"{path.name.replace('.pdf', '')}_page_{output_page_index}.pdf"
     )
+
+    write_pdf(output_path, pdf_writer)
+
+    pdf_writer = PdfWriter()
+    output_page = pdf_writer.add_blank_page(page.mediabox.width, page.mediabox.height)
+    output_page.merge_page(page)
+    output_page.mediabox.upper_left = dimensions
     pdf_writer.add_page(page)
-    output_path = output_folder / f"{path.name.replace('.pdf', '')}_page_{page_index+1}.pdf"
+    output_page_index = (page_index + 1) * 2
+    output_path = (
+        output_folder / f"{path.name.replace('.pdf', '')}_page_{output_page_index}.pdf"
+    )
 
     write_pdf(output_path, pdf_writer)
 
@@ -61,11 +75,11 @@ def split_pdf(path, split_pages):
     pdf = PdfReader(path)
     output_folder = path.parent.absolute() / "single_page_export"
     output_folder.mkdir(exist_ok=True)
-    for page in range(len(pdf.pages)):
+    for page_index in range(len(pdf.pages)):
         if split_pages:
-            write_split_pages(page, pdf, path, output_folder)
+            write_split_pages(page_index, pdf, path, output_folder)
         else:
-            write_single_page(page, pdf, path, output_folder)
+            write_single_page(page_index, pdf, path, output_folder)
 
 
 def main():
