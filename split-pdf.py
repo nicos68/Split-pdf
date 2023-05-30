@@ -31,12 +31,12 @@ parser.add_argument(
 
 def split_pdf(path):
     pdf = PdfReader(path)
+    output_folder = path.parent.absolute() / "single_page_export"
+    output_folder.mkdir(exist_ok=True)
     for page in range(len(pdf.pages)):
         pdf_writer = PdfWriter()
         pdf_writer.add_page(pdf.pages[page])
 
-        output_folder = path.parent.absolute() / "single_page_export"
-        output_folder.mkdir(exist_ok=True)
         output_path = output_folder / f"{path.name}_page_{page+1}.pdf"
 
         with open(output_path, "wb") as out:
