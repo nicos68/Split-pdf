@@ -45,16 +45,16 @@ def write_pdf(path, writer):
 
 
 def write_split_pages(page_index, pdf, path, output_folder):
-    pdf_writer = PdfWriter()
     page = pdf.pages[page_index]
+    dimensions = (page.mediabox.right / 2, page.mediabox.top)
+    output_file_name_prefix = f"{path.name.replace('.pdf', '')}_page_"
+
+    pdf_writer = PdfWriter()
     output_page = pdf_writer.add_blank_page(page.mediabox.width, page.mediabox.height)
     output_page.merge_page(page)
-    dimensions = (page.mediabox.right / 2, page.mediabox.top)
     output_page.mediabox.upper_right = dimensions
     output_page_index = page_index * 2 + 1
-    output_path = (
-        output_folder / f"{path.name.replace('.pdf', '')}_page_{output_page_index}.pdf"
-    )
+    output_path = output_folder / f"{output_file_name_prefix}{output_page_index}.pdf"
 
     write_pdf(output_path, pdf_writer)
 
@@ -62,11 +62,8 @@ def write_split_pages(page_index, pdf, path, output_folder):
     output_page = pdf_writer.add_blank_page(page.mediabox.width, page.mediabox.height)
     output_page.merge_page(page)
     output_page.mediabox.upper_left = dimensions
-    pdf_writer.add_page(page)
     output_page_index = (page_index + 1) * 2
-    output_path = (
-        output_folder / f"{path.name.replace('.pdf', '')}_page_{output_page_index}.pdf"
-    )
+    output_path = output_folder / f"{output_file_name_prefix}{output_page_index}.pdf"
 
     write_pdf(output_path, pdf_writer)
 
