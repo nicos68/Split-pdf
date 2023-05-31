@@ -12,11 +12,13 @@ def is_valid_pdf(filepath):
 
 
 parser = argparse.ArgumentParser(
+
     prog="PDFSplitter",
     usage="%(prog)s pdfToSplit",
     description="Pass one or more pdfs and spit and export single pages",
     epilog="et nique le capitalisme bien évidemment.",
 )
+
 
 parser.add_argument(
     dest="paths",
@@ -57,9 +59,18 @@ def generate_right_page(page, dimensions):
     output_page.mediabox.upper_left = dimensions
     return pdf_writer
 
+parser.add_argument(
+        "--crop",
+        "-C",
+        action="store_true",
+        dest="crop_page",
+        help="Flag to set a split in half of each page except first and last.",
+        )
+        
 
 def split_pdf(path):
     pdf = PdfReader(path)
+
     output_folder = path.parent.absolute() / "single_page_export"
     output_folder.mkdir(exist_ok=True)
     widths = {p.mediabox.width for p in pdf.pages}
@@ -85,12 +96,14 @@ def split_pdf(path):
             write_single_page(page_index, pdf, output_path)
 
 
+
 def main():
     args = parser.parse_args()
     files = args.paths
+    crop_page = args.crop_page
+
     for one_file in files:
         split_pdf(one_file)
-
 
 if __name__ == "__main__":
     main()
